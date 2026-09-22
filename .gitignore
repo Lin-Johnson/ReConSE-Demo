@@ -5,8 +5,11 @@
 artifacts/
 outputs/
 qwen-fusion-site/
+paper_references/
+bandwidth
+clipping
+reverberation
 __pycache__/
 *.pyc
 .venv/
 venv/
-
