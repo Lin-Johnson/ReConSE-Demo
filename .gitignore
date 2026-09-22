@@ -13,3 +13,9 @@ __pycache__/
 *.pyc
 .venv/
 venv/
+
+# This repository publishes the Demo page only.
+/*
+!/.gitignore
+!/Demo/
+!/Demo/**
