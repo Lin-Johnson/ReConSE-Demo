@@ -14,8 +14,16 @@ __pycache__/
 .venv/
 venv/
 
-# This repository publishes the Demo page only.
+# This repository publishes the Demo page at its root.
 /*
 !/.gitignore
-!/Demo/
-!/Demo/**
+!/audio-player.js
+!/audio/
+!/audio/**
+!/favicon.svg
+!/figure1-preview.png
+!/figure1.pdf
+!/index.html
+!/styles.css
+!/video/
+!/video/**
