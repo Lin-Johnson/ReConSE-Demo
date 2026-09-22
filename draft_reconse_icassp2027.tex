@@ -1,0 +1,206 @@
+% Draft manuscript based on the official ICASSP 2027 Template.tex.
+% Keep Template.tex unchanged; edit this file for the ReConSE paper.
+\documentclass{article}
+\usepackage{spconf,amsmath,amssymb,graphicx,hyperref}
+
+\title{ReConSE: Parameter-Efficient Speech Restoration via Shared Recurrent Control of a Pretrained Speech Generator}
+\name{Author(s) Name(s)}
+\address{Author Affiliation(s)}
+
+\begin{document}
+\ninept
+\maketitle
+
+\begin{abstract}
+% TODO: add the final 100--150 word abstract.
+\textit{Abstract to be completed.}
+\end{abstract}
+
+\begin{keywords}
+speech restoration, flow matching, F5-TTS, recurrent control, speech representation adapter
+\end{keywords}
+
+\section{Introduction}
+% TODO: add the introduction and related-work discussion.
+\textit{Introduction to be completed.}
+
+\section{Method}
+
+\subsection{A. Framework Overview}
+
+Figure~\ref{fig:reconse} presents ReConSE, a parameter-efficient framework that repurposes a pretrained speech generator for speech restoration. Given degraded speech $x_{\mathrm{deg}}$, we extract its mel spectrogram $m_{\mathrm{deg}}$ as the direct acoustic observation and derive a higher-level representation $H_{\mathrm{enc}}$ using a frozen pretrained audio encoder. The degraded mel spectrogram is persistently injected into a frozen flow-matching generator through Shared Recurrent Control (SRControl), while Sparse Speech Representation Adapters (SSRA) introduce the audio representation at selected backbone layers. An available transcript is incorporated through the generator's native text-conditioning pathway; otherwise, the model restores speech solely from the degraded signal. The generator produces a restored mel spectrogram $\hat{m}_{\mathrm{clean}}$, which is converted into the waveform $\hat{x}_{\mathrm{clean}}$ by a pretrained vocoder.
+
+SRControl and SSRA provide complementary acoustic and content guidance. SRControl reuses a single control block across the depth of the generator, carrying observable speaker, prosodic, temporal, and local acoustic cues throughout generation. SSRA injects content-aware representations into a small set of critical layers to support regions where the acoustic evidence is severely corrupted. The F5-TTS backbone and audio encoder remain frozen during restoration training, and only the two restoration-specific branches are optimized. This design preserves the pretrained natural-speech prior while substantially reducing the adaptation cost.
+
+\begin{figure}[t]
+  \centering
+  \fbox{\parbox[c][1.55cm][c]{0.94\linewidth}{\centering Insert the ReConSE framework diagram here.}}
+  \caption{Overview of ReConSE. The degraded speech provides persistent acoustic control through SRControl and sparse content guidance through SSRA. An optional transcript is processed by the native F5-TTS text-conditioning pathway. The frozen flow-matching generator predicts the restored mel spectrogram, which is converted into a waveform by a pretrained vocoder.}
+  \label{fig:reconse}
+\end{figure}
+
+\subsection{B. Pretrained Flow-Matching Generator and Text Conditioning}
+
+We employ pretrained F5-TTS as the speech generation backbone. Its Diffusion Transformer (DiT) parameterizes a time-dependent velocity field under the conditional flow-matching formulation, modeling a continuous transport from a simple prior to the natural-speech distribution in the mel-spectrogram domain. Let $m_{\mathrm{clean}}$ denote the target clean mel spectrogram, $m_0\sim\mathcal{N}(0,I)$ a sample from the Gaussian prior, and $t\sim\mathcal{U}[0,1]$ the flow time. The linear probability path is defined as
+
+\begin{equation}
+  m_t=(1-t)m_0+t m_{\mathrm{clean}}.
+\end{equation}
+
+The corresponding target velocity is
+
+\begin{equation}
+  u_t=\frac{\mathrm{d}m_t}{\mathrm{d}t}=m_{\mathrm{clean}}-m_0.
+\end{equation}
+
+ReConSE augments the frozen F5-TTS velocity field with degraded-speech and audio-representation conditions. The restoration-specific modules are optimized using the flow-matching objective
+
+\begin{equation}
+\begin{split}
+\mathcal{L}_{\mathrm{FM}}
+={}&\mathbb{E}_{t,m_0,m_{\mathrm{clean}}}\Big[
+\big\|v_{\theta,\phi,\psi}
+\big(m_t,t; m_{\mathrm{deg}},H_{\mathrm{enc}},c_{\mathrm{text}}\big)\\
+&\qquad\qquad-u_t\big\|_2^2\Big].
+\end{split}
+\end{equation}
+
+Here, $\theta$, $\phi$, and $\psi$ denote the parameters of the frozen generator, SRControl, and SSRA, respectively. We keep $\theta$ fixed and optimize only $\phi$ and $\psi$, adapting the natural-speech prior learned by F5-TTS without retraining the full generative backbone. At inference, the restored mel spectrogram is obtained by integrating the learned velocity field from $m_0$:
+
+\begin{equation}
+  \frac{\mathrm{d}m_t}{\mathrm{d}t}
+  =v_{\theta,\phi,\psi}\big(m_t,t;
+  m_{\mathrm{deg}},H_{\mathrm{enc}},c_{\mathrm{text}}\big),
+  \qquad \hat{m}_{\mathrm{clean}}=m_1.
+\end{equation}
+
+We retain the native character-level text-conditioning pathway of F5-TTS. Given a transcript $y$, the pretrained text encoder produces a linguistic representation that is combined with the acoustic input to the DiT. When no transcript is available, the text condition is set to an empty representation:
+
+\begin{equation}
+  c_{\mathrm{text}}=
+  \begin{cases}
+    E_{\mathrm{text}}(y), & y\neq\varnothing,\\
+    \mathbf{0}, & y=\varnothing.
+  \end{cases}
+\end{equation}
+
+Random text-condition dropout during training enables a single model to support both transcription-assisted and transcript-free restoration. At inference, the same interface accepts clean text associated with the target utterance, noisy text recognized from the degraded signal, or no text. These settings vary only in the availability and reliability of $c_{\mathrm{text}}$ and require no architectural changes.
+
+\subsection{C. Shared Recurrent Control}
+
+The degraded signal is a direct observation of the target speech and must remain accessible throughout restoration. Conditioning only the input or a few intermediate layers can weaken fine-grained acoustic evidence as generation proceeds, whereas assigning an independent control block to every layer incurs substantial parameter redundancy. SRControl addresses both requirements by providing persistent control to 21 layers of the 22-layer F5-TTS DiT backbone while sharing a single trainable control block across depth.
+
+Let $h_{i-1}$ be the hidden state entering the $i$-th controlled backbone layer, $s_{i-1}$ the recurrent control state, and $e_t$ the timestep embedding. The degraded mel spectrogram is first mapped to the initial control representation $s_0$ using the backbone input embedding. For $i=1,\ldots,L$ with $L=21$, the control and backbone states are updated as
+
+\begin{equation}
+  s_i=F_{\phi}\!\left(s_{i-1}+h_{i-1},e_t\right),
+\end{equation}
+
+\begin{equation}
+  r_i=P_i(s_i),
+  \qquad
+  h_i=B_i\!\left(h_{i-1}+r_i,e_t\right).
+\end{equation}
+
+$F_{\phi}$ denotes the shared control block initialized from a pretrained DiT layer, $B_i$ is the frozen $i$-th backbone layer, and $P_i$ is a layer-specific projection that produces the control residual $r_i$. The same $F_{\phi}$ is reused for all 21 control updates:
+
+\begin{equation}
+  F_1,F_2,\ldots,F_{21}\quad\Longrightarrow\quad F_{\mathrm{shared}}.
+\end{equation}
+
+The recurrent state accumulates context along network depth and is updated with the current backbone representation at every layer, turning the degraded observation into a persistent condition rather than a one-time input. Only the lightweight projections $P_i$ remain layer-specific. We zero-initialize the input projection of the controller and every output projection $P_i$, so all control residuals are initially zero and the network starts from the pretrained generator's behavior. Compared with an independent-control design that replicates a full block at each layer, SRControl reduces the main controller from 21 parameter sets to one while retaining depth-wise acoustic guidance.
+
+\subsection{D. Sparse Speech Representation Adapter}
+
+SRControl preserves acoustic structure that remains observable in the degraded mel spectrogram. Under low-SNR, bandwidth-limited, or compound distortions, however, local linguistic content may no longer be reliably inferred from spectral detail alone. We therefore extract a complementary continuous representation from the 16-kHz degraded waveform using a frozen Qwen3-ASR audio encoder and select its 18th hidden layer:
+
+\begin{equation}
+  H_{\mathrm{enc}}
+  =E_{\mathrm{audio}}^{(18)}(x_{\mathrm{deg}})
+  \in\mathbb{R}^{T_e\times 1024}.
+\end{equation}
+
+SSRA injects this representation through cross-attention. At an adapted DiT layer $i$, the adapter reuses the self-attention query $Q_i$ and maps $H_{\mathrm{enc}}$ to an additional key-value pair using two trainable projections:
+
+\begin{equation}
+  K_i^{\mathrm{a}}=H_{\mathrm{enc}}W_{K,i}^{\mathrm{a}},
+  \qquad
+  V_i^{\mathrm{a}}=H_{\mathrm{enc}}W_{V,i}^{\mathrm{a}},
+\end{equation}
+
+\begin{equation}
+  A_i
+  =\operatorname{Softmax}\!\left(
+  \frac{Q_i(K_i^{\mathrm{a}})^{\top}}{\sqrt{d_h}}
+  \right)V_i^{\mathrm{a}}.
+\end{equation}
+
+The adapter response $A_i$ is added to the attention representation of the corresponding DiT layer. Both $W_{K,i}^{\mathrm{a}}$ and $W_{V,i}^{\mathrm{a}}$ are zero-initialized, allowing the new branch to preserve the initial behavior of the frozen backbone. Since $H_{\mathrm{enc}}$ is derived directly from the input waveform, SSRA supplies content-aware guidance without requiring an external transcript and remains active in transcript-free inference.
+
+To identify a compact set of effective injection points, we first train a dense model with adapters in all 22 DiT layers. Each adapter is then disabled individually on the development set, and the resulting WER increase is used to measure the importance of its location:
+
+\begin{equation}
+  \Delta_i=\mathrm{WER}_{-i}-\mathrm{WER}_{\mathrm{all}}.
+\end{equation}
+
+Here, $\mathrm{WER}_{\mathrm{all}}$ is obtained with all adapters enabled, and $\mathrm{WER}_{-i}$ is measured after disabling the adapter at layer $i$. A larger $\Delta_i$ indicates a more influential injection point. We retain the ten locations with the largest sensitivity scores:
+
+\begin{equation}
+  \mathcal{S}=\{0,2,4,10,11,12,13,15,16,21\}.
+\end{equation}
+
+Layer indices are zero-based. The resulting sparse configuration concentrates representation guidance at layers that contribute most to recognition accuracy, reducing adapter parameters while preserving the restoration performance of dense 22-layer injection.
+
+\section{Experiments and Results}
+
+\subsection{A. Experimental Setup}
+
+\subsubsection{Datasets}
+
+The training set consists of paired degraded and clean speech from GLDNS and LibriTTS. All utterances are converted to 24 kHz, with each degraded signal temporally aligned to its clean target. The data cover common degradations including additive noise, reverberation, clipping, and bandwidth limitation, allowing a single model to learn multiple restoration tasks. Each degraded utterance provides the mel-spectrogram condition for SRControl and, after resampling to 16 kHz, the input to the frozen Qwen3-ASR audio encoder. The paired clean waveform serves as the flow-matching target.
+
+We evaluate speech enhancement on the DNS Challenge 2020 test sets. The synthetic no-reverb set contains 150 paired noisy and clean utterances and supports reference-based evaluation under a standard denoising condition. The real-recording set contains 300 real-world noisy utterances without clean references; it is used to assess generalization to recorded acoustic conditions with non-intrusive quality metrics.
+
+\subsubsection{Model Details}
+
+ReConSE is built on the pretrained F5-TTS v1 Base generator. Its velocity estimator contains 22 DiT blocks with a hidden dimension of 1024, 16 attention heads, and a feed-forward dimension of 2048. The input representation is a 100-bin mel spectrogram extracted from 24-kHz waveforms using a hop length of 256 and FFT and window lengths of 1024. Generated mel spectrograms are converted to waveforms using a pretrained Vocos vocoder.
+
+The main configuration reuses one SRControl block across 21 DiT layers and places ten SSRA modules at $\mathcal{S}=\{0,2,4,10,11,12,13,15,16,21\}$. SSRA is conditioned on the 18th-layer representation of the frozen Qwen3-ASR-1.7B audio encoder. Both the F5-TTS backbone and audio encoder remain frozen; training updates only SRControl, the layer-specific control projections, and SSRA. The restoration network contains 58.8M trainable parameters and 395.9M parameters in total, excluding the external frozen audio encoder and vocoder from this count.
+
+The model is trained for 130K steps on four NVIDIA L20 GPUs with a global batch size of 50,000 audio frames. We use AdamW with a peak learning rate of $7.5\times10^{-5}$. The learning rate is linearly warmed up for the first 10K steps and then linearly decayed over the remaining training steps. Text conditions are randomly dropped during training, enabling the same model parameters to support clean-text, noisy-text, and transcript-free inference.
+
+\subsubsection{Comparison Models}
+
+We compare ReConSE with seven representative speech enhancement and restoration systems. The predictive baselines include MP-SENet, which estimates magnitude and phase spectra in parallel, and TF-GridNet, which performs complex time-frequency mapping through full-band, sub-band, and cross-frame modeling. PGUSE combines a direct predictive branch with a diffusion-based generative branch using output fusion and truncated diffusion. Together, these systems provide strong predictive and hybrid predictive-generative references.
+
+The generative baselines are FlowSE, AnyEnhance, UniPASE, and SenSE. FlowSE employs a DiT-based flow-matching model with optional transcript conditioning. AnyEnhance uses masked generative modeling with prompt guidance and self-critic refinement to address multiple speech degradations in a unified system. UniPASE performs enhancement in a pretrained speech-representation space and reconstructs waveforms through an adapter-vocoder pipeline. SenSE predicts semantic tokens with a speech language model and uses them to guide flow-matching-based enhancement. These baselines cover the major generative restoration paradigms based on text conditioning, masked generation, representation-level enhancement, and semantic guidance.
+
+For each comparison system, we use its public implementation and corresponding pretrained checkpoint with the recommended inference configuration. We explicitly report whether a transcript is used at inference for text-capable models. ReConSE is evaluated from a single checkpoint under three conditions: clean text associated with the target utterance, noisy text recognized from the degraded input, and transcript-free inference without text.
+
+\subsubsection{Metrics}
+
+We evaluate restored speech in terms of perceptual quality, content preservation, and speaker consistency. Perceptual quality is assessed using two non-intrusive metrics. DNSMOS P.835 provides separate estimates of speech signal quality (SIG), background quality (BAK), and overall quality (OVRL), while NISQA predicts speech naturalness and overall perceptual quality. Neither metric requires a clean reference, making both applicable to the DNS Challenge real-recording set.
+
+SpeechBERTScore assesses the semantic similarity between enhanced and clean-reference speech. We use HuBERT-base to extract speech features and compute the SpeechBERTScore between the two utterances. This metric measures content preservation in the representation space.
+
+WER evaluates word-level content deviations introduced during enhancement. Whisper-large-v3 is used to transcribe both the enhanced utterance and its clean reference. We remove punctuation and lowercase the English transcripts, then compute WER using the clean-speech transcription as the reference and the enhanced-speech transcription as the hypothesis. Using ASR transcriptions on both sides reduces mismatches between dataset annotations and ASR output conventions, allowing the metric to focus on recognition differences between enhanced and reference speech.
+
+Speaker consistency is measured by Similarity. We extract speaker embeddings from the enhanced and clean-reference utterances using the pretrained \texttt{wavlm-base-plus-sv} speaker-verification model and compute their cosine similarity. Higher values are better for DNSMOS, NISQA, SpeechBERTScore, and Similarity, whereas lower WER is better.
+
+\subsection{B. Experimental Results}
+% TODO: add the main comparison tables, numerical results, and discussion.
+\textit{Experimental results to be completed.}
+
+\subsection{C. Ablation Studies and Analysis}
+% TODO: add ablations for SRControl, SSRA, injection locations, and text conditions.
+\textit{Ablation studies and analysis to be completed.}
+
+\section{Conclusion}
+% TODO: add the final conclusion.
+\textit{Conclusion to be completed.}
+
+% Add citations and enable the bibliography when the reference list is ready:
+% \bibliographystyle{IEEEbib}
+% \bibliography{refs}
+
+\end{document}

@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta
+      name="description"
+      content="Anonymous demonstration page for ReConSE speech enhancement."
+    />
+    <meta name="color-scheme" content="light" />
+    <title>ReConSE — Anonymous Demo</title>
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="./audio-player.js" defer></script>
+  </head>
+  <body>
+    <div class="page-shell">
+      <header class="paper-header">
+        <div class="submission-label">
+          <span class="brand-mark" aria-hidden="true">R</span>
+          <span>Anonymous research demo</span>
+          <span class="label-divider" aria-hidden="true"></span>
+          <span class="review-status">Under review</span>
+        </div>
+
+        <h1>
+          <span class="title-brand">ReConSE</span>
+          <span class="title-rest">
+            Recurrent Control over Pretrained Text-to-Speech Model for
+            Universal Speech Enhancement
+          </span>
+        </h1>
+
+        <div class="byline" aria-label="Anonymous author information">
+          <span>Anonymous Authors</span>
+          <span class="byline-dot" aria-hidden="true"></span>
+          <span>Anonymous submission</span>
+        </div>
+      </header>
+
+      <main>
+        <section class="overview-grid" aria-label="Paper overview">
+          <article class="content-card abstract-card" aria-labelledby="abstract-title">
+            <div class="card-topline">
+              <span class="section-index">01</span>
+              <span class="card-kicker">PAPER OVERVIEW</span>
+            </div>
+            <h2 id="abstract-title">Abstract</h2>
+            <p class="abstract-copy">
+              Generative universal speech enhancement (USE) improves speech
+              quality under diverse and compound distortions by leveraging
+              learned speech priors. Instead of training an
+              enhancement-specific generative model from scratch, we propose
+              <strong>ReConSE</strong> (<strong>Rec</strong>urrent
+              <strong>Con</strong>trol for <strong>S</strong>peech
+              <strong>E</strong>nhancement), a parameter-efficient framework
+              that repurposes a frozen pretrained F5-TTS flow-matching model
+              for USE. ReConSE preserves the clean-speech prior and optional
+              text-conditioning pathway of F5-TTS, while learning lightweight
+              conditioning modules to guide clean-speech generation from
+              degraded input. We introduce
+              <strong>Backbone-Aware Recurrent Control</strong>, which reuses a
+              single control block across backbone depth and updates its
+              control state with the evolving DiT representation for effective
+              degraded-speech conditioning. To improve linguistic fidelity
+              under severe degradations, a
+              <strong>Sparse Semantic Adapter</strong> injects
+              degradation-robust semantic information into selected DiT layers.
+              Experiments on denoising and general speech restoration show that
+              ReConSE, trained on a smaller paired dataset with substantially
+              fewer trainable parameters, achieves performance comparable to
+              generative enhancement models trained from scratch.
+            </p>
+          </article>
+
+          <figure class="content-card figure-card">
+            <div class="card-topline">
+              <span class="section-index">FIG.</span>
+              <span class="card-kicker">METHOD OVERVIEW</span>
+            </div>
+            <div class="figure-space">
+              <img
+                class="figure-image"
+                src="./figure1-preview.png"
+                alt="Flowchart of the ReConSE speech enhancement framework"
+              />
+            </div>
+            <figcaption>
+              Overview of ReConSE.
+              <a href="./figure1.pdf" target="_blank" rel="noreferrer">Open PDF</a>
+            </figcaption>
+          </figure>
+        </section>
+
+        <section class="examples-section" aria-labelledby="examples-title">
+          <div class="section-heading">
+            <div class="section-heading-mark" aria-hidden="true"></div>
+            <div>
+              <p class="eyebrow">QUALITATIVE RESULTS</p>
+              <h2 id="examples-title">Examples</h2>
+            </div>
+            <span class="heading-note">Audio + video samples</span>
+          </div>
+
+          <article class="example-card" aria-labelledby="example-one-title">
+            <div class="example-intro">
+              <div class="example-number" aria-hidden="true">01</div>
+              <div>
+                <p class="example-label">FIRST EXAMPLE</p>
+                <h3 id="example-one-title">Speech enhancement</h3>
+              </div>
+              <p class="example-description">
+                Compare model outputs across DNS Challenge and GSR samples.
+              </p>
+            </div>
+
+            <div class="table-scroll" tabindex="0" aria-label="Scrollable audio comparison table">
+              <table class="results-table">
+                <caption class="visually-hidden">
+                  ReConSE audio examples grouped by DNS Challenge without reverberation and GSR.
+                </caption>
+                <colgroup>
+                  <col class="model-column" />
+                  <col span="5" />
+                </colgroup>
+                <thead>
+                  <tr class="group-row">
+                    <th class="model-heading" scope="col" rowspan="2">Model</th>
+                    <th class="dataset-heading dns-heading" scope="colgroup" colspan="2">
+                      <span class="dataset-name">DNS Challenge</span>
+                      <span class="dataset-detail">No Reverb</span>
+                    </th>
+                    <th class="dataset-heading gsr-heading" scope="colgroup" colspan="3">
+                      <span class="dataset-name">GSR</span>
+                      <span class="dataset-detail">Selected clips</span>
+                    </th>
+                  </tr>
+                  <tr class="sample-row">
+                    <th scope="col">Sample 01</th>
+                    <th scope="col">Sample 02</th>
+                    <th scope="col">Sample 03</th>
+                    <th scope="col">Sample 04</th>
+                    <th scope="col">Sample 05</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr class="input-row">
+                    <th class="model-cell" scope="row">
+                      <span class="model-name">Degraded</span>
+                      <span class="model-tag">Input</span>
+                    </th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/degraded.wav" aria-label="degraded, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/degraded.wav" aria-label="degraded, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/degraded.wav" aria-label="Degraded input, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/degraded.wav" aria-label="Degraded input, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/degraded.wav" aria-label="Degraded input, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr>
+                    <th class="model-cell" scope="row"><span class="model-name">PGUSE</span></th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/PGUSE.wav" aria-label="PGUSE, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/PGUSE.wav" aria-label="PGUSE, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/PGUSE.wav" aria-label="PGUSE, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/PGUSE.wav" aria-label="PGUSE, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/PGUSE.wav" aria-label="PGUSE, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr>
+                    <th class="model-cell" scope="row"><span class="model-name">UniPASE</span></th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/UniPASE.wav" aria-label="UniPASE, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/UniPASE.wav" aria-label="UniPASE, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/UniPASE.wav" aria-label="UniPASE, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/UniPASE.wav" aria-label="UniPASE, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/UniPASE.wav" aria-label="UniPASE, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr>
+                    <th class="model-cell" scope="row"><span class="model-name">SenSE Base</span></th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/SenSE_seed0.wav" aria-label="SenSE Base, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/SenSE_seed0.wav" aria-label="SenSE Base, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/SenSE_seed0.wav" aria-label="SenSE Base, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/SenSE_seed0.wav" aria-label="SenSE Base, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/SenSE_seed0.wav" aria-label="SenSE Base, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr class="reconse-row">
+                    <th class="model-cell" scope="row">
+                      <span class="model-name">ReConSE</span>
+                      <span class="model-tag">w/o text</span>
+                    </th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/ReConSE_without_text.wav" aria-label="ReConSE_without_text, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/ReConSE_without_text.wav" aria-label="ReConSE_without_text, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/ReConSE_without_text.wav" aria-label="ReConSE without text, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/ReConSE_without_text.wav" aria-label="ReConSE without text, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/ReConSE_without_text.wav" aria-label="ReConSE without text, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr class="reconse-row">
+                    <th class="model-cell" scope="row">
+                      <span class="model-name">ReConSE</span>
+                      <span class="model-tag">w/ text_deg</span>
+                    </th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/ReConSE_noisy_text.wav" aria-label="ReConSE_noisy_text, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/ReConSE_noisy_text.wav" aria-label="ReConSE_noisy_text, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/ReConSE_noisy_text.wav" aria-label="ReConSE with degraded text, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/ReConSE_noisy_text.wav" aria-label="ReConSE with degraded text, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/ReConSE_noisy_text.wav" aria-label="ReConSE with degraded text, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr class="reconse-row">
+                    <th class="model-cell" scope="row">
+                      <span class="model-name">ReConSE</span>
+                      <span class="model-tag">w/ text_clean</span>
+                    </th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/ReConSE_clean_text.wav" aria-label="ReConSE_clean_text, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/ReConSE_clean_text.wav" aria-label="ReConSE_clean_text, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/ReConSE_clean_text.wav" aria-label="ReConSE with clean text, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/ReConSE_clean_text.wav" aria-label="ReConSE with clean text, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/ReConSE_clean_text.wav" aria-label="ReConSE with clean text, GSR sample 03"></audio></td>
+                  </tr>
+                  <tr class="clean-row">
+                    <th class="model-cell" scope="row">
+                      <span class="model-name">Clean</span>
+                      <span class="model-tag">Reference</span>
+                    </th>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/94/clean.wav" aria-label="clean, DNS no-reverb sample 94"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/dns-no-reverb/53/clean.wav" aria-label="clean, DNS no-reverb sample 53"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/76/clean.wav" aria-label="Clean reference, GSR sample 01"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/139/clean.wav" aria-label="Clean reference, GSR sample 02"></audio></td>
+                    <td><audio class="audio-player" controls preload="none" src="./audio/gsr/268/clean.wav" aria-label="Clean reference, GSR sample 03"></audio></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="example-footnote">
+              <span class="footnote-dot" aria-hidden="true"></span>
+              Audio samples are shown for DNS Challenge (No Reverb) and GSR.
+            </div>
+          </article>
+
+          <article class="example-card" aria-labelledby="example-two-title">
+            <div class="example-intro">
+              <div class="example-number">02</div>
+              <div>
+                <p class="example-label">SECOND EXAMPLE</p>
+                <h3 id="example-two-title">Real recordings</h3>
+              </div>
+              <p class="example-description">
+                Four real recording samples with the degraded input and ReConSE outputs.
+              </p>
+            </div>
+
+            <div class="media-table real-recordings-table" role="table" aria-label="Real recording samples">
+              <div class="media-table-header" role="row">
+                <div class="media-row-label" role="columnheader">Audio File</div>
+                <div class="media-model-heading input-heading" role="columnheader">Degraded Speech</div>
+                <div class="media-model-heading reconse-heading" role="columnheader">
+                  <span class="media-model-name">ReConSE</span>
+                  <span class="media-model-tag">w/o text</span>
+                </div>
+                <div class="media-model-heading reconse-heading" role="columnheader">
+                  <span class="media-model-name">ReConSE</span>
+                  <span class="media-model-tag">w/ text_deg</span>
+                </div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">audioset_realrec_airconditioner_B1YftJ2XFyc</div>
+                <div class="real-audio-cell input-audio" role="cell" aria-label="Degraded Speech, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/01/degraded.wav" aria-label="Degraded Speech, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE without text, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/01/reconse_without_text.wav" aria-label="ReConSE without text, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE with noisy text, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/01/reconse_noisy_text.wav" aria-label="ReConSE with noisy text, real recording audioset_realrec_airconditioner_B1YftJ2XFyc"></audio></div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">audioset_realrec_babycry_3oS1DK_35z4</div>
+                <div class="real-audio-cell input-audio" role="cell" aria-label="Degraded Speech, real recording audioset_realrec_babycry_3oS1DK_35z4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/02/degraded.wav" aria-label="Degraded Speech, real recording audioset_realrec_babycry_3oS1DK_35z4"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE without text, real recording audioset_realrec_babycry_3oS1DK_35z4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/02/reconse_without_text.wav" aria-label="ReConSE without text, real recording audioset_realrec_babycry_3oS1DK_35z4"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE with noisy text, real recording audioset_realrec_babycry_3oS1DK_35z4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/02/reconse_noisy_text.wav" aria-label="ReConSE with noisy text, real recording audioset_realrec_babycry_3oS1DK_35z4"></audio></div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">ms_realrec_headset_typing_spk1_4</div>
+                <div class="real-audio-cell input-audio" role="cell" aria-label="Degraded Speech, real recording ms_realrec_headset_typing_spk1_4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/03/degraded.wav" aria-label="Degraded Speech, real recording ms_realrec_headset_typing_spk1_4"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE without text, real recording ms_realrec_headset_typing_spk1_4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/03/reconse_without_text.wav" aria-label="ReConSE without text, real recording ms_realrec_headset_typing_spk1_4"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE with noisy text, real recording ms_realrec_headset_typing_spk1_4"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/03/reconse_noisy_text.wav" aria-label="ReConSE with noisy text, real recording ms_realrec_headset_typing_spk1_4"></audio></div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">ms_realrec_speakerphone_speakerphone_clatter_senja_1</div>
+                <div class="real-audio-cell input-audio" role="cell" aria-label="Degraded Speech, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/04/degraded.wav" aria-label="Degraded Speech, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE without text, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/04/reconse_without_text.wav" aria-label="ReConSE without text, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"></audio></div>
+                <div class="real-audio-cell reconse-audio" role="cell" aria-label="ReConSE with noisy text, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"><audio class="audio-player" controls preload="none" src="./audio/real-recordings/04/reconse_noisy_text.wav" aria-label="ReConSE with noisy text, real recording ms_realrec_speakerphone_speakerphone_clatter_senja_1"></audio></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="example-card" aria-labelledby="example-three-title">
+            <div class="example-intro">
+              <div class="example-number">03</div>
+              <div>
+                <p class="example-label">THIRD EXAMPLE</p>
+                <h3 id="example-three-title">Video samples</h3>
+              </div>
+              <p class="example-description">
+                Visual examples before and after ReConSE processing.
+              </p>
+            </div>
+
+            <div class="media-table video-samples-table" role="table" aria-label="Video samples">
+              <div class="media-table-header" role="row">
+                <div class="media-row-label" role="columnheader">Sample</div>
+                <div role="columnheader">Origin</div>
+                <div role="columnheader">After Processing</div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">Sample 01</div>
+                <div class="video-media-cell" role="cell" aria-label="Origin video, real recording 01"><video class="video-player" controls preload="metadata" src="./video/real_recording_01_origin.mp4"></video></div>
+                <div class="video-media-cell" role="cell" aria-label="After Processing video, real recording 01"><video class="video-player" controls preload="metadata" src="./video/real_recording_01_after_processing.mp4"></video></div>
+              </div>
+              <div class="media-table-row" role="row">
+                <div class="media-row-label" role="rowheader">Sample 02</div>
+                <div class="empty-media video-placeholder" role="cell" aria-label="Origin video, Sample 02"><span>Video coming soon</span></div>
+                <div class="empty-media video-placeholder" role="cell" aria-label="After Processing video, Sample 02"><span>Video coming soon</span></div>
+              </div>
+            </div>
+          </article>
+        </section>
+      </main>
+
+      <footer class="page-footer">
+        <span>ReConSE</span>
+        <span class="footer-separator" aria-hidden="true">/</span>
+        <span>Anonymous submission</span>
+        <span class="footer-spacer"></span>
+        <span class="footer-note">Demo page</span>
+      </footer>
+    </div>
+  </body>
+</html>

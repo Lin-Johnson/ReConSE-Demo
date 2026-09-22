@@ -1,0 +1,26 @@
+--- datasets/mixed_time.py
++++ datasets/mixed_time.py
+@@ -791,5 +791,8 @@
+-    # 4. 添加常规噪声（如果没有用风噪或概率允许叠加）
+-    elif noise_path is not None and rng.random() < degradation_config["p_noise"]:
++    # 4. 添加常规噪声
++    # 风噪已经在上面通过 p_wind_noise 做过一次互斥选择；未选择风噪时，
++    # 直接使用普通噪声，避免普通噪声再次经过 p_noise 概率判定。
++    # 因此在默认 p_wind_noise=0.1 时，普通噪声的总体概率约为 0.9。
++    elif noise_path is not None:
+         noise, _ = read_audio(noise_path, force_1ch=force_1ch, fs=fs)
+         snr = rng.uniform(degradation_config["snr_min"], degradation_config["snr_max"])
+         noisy_vocal, _ = add_noise(noisy_vocal, noise, snr=snr, rng=rng)
+--- datasets/libritts_r/codex/mixed_time_new.py
++++ datasets/libritts_r/codex/mixed_time_new.py
+@@ -791,5 +791,8 @@
+-    # 4. 添加常规噪声（如果没有用风噪或概率允许叠加）
+-    elif noise_path is not None and rng.random() < degradation_config["p_noise"]:
++    # 4. 添加常规噪声
++    # 风噪已经在上面通过 p_wind_noise 做过一次互斥选择；未选择风噪时，
++    # 直接使用普通噪声，避免普通噪声再次经过 p_noise 概率判定。
++    # 因此在默认 p_wind_noise=0.1 时，普通噪声的总体概率约为 0.9。
++    elif noise_path is not None:
+         noise, _ = read_audio(noise_path, force_1ch=force_1ch, fs=fs)
+         snr = rng.uniform(degradation_config["snr_min"], degradation_config["snr_max"])
+         noisy_vocal, _ = add_noise(noisy_vocal, noise, snr=snr, rng=rng)

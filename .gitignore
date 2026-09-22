@@ -1,0 +1,12 @@
+.DS_Store
+.codex_remote_stage/
+.codex_remote_stage_*/
+.pnpm-store/
+artifacts/
+outputs/
+qwen-fusion-site/
+__pycache__/
+*.pyc
+.venv/
+venv/
+
