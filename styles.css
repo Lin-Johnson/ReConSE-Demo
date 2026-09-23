@@ -142,7 +142,7 @@ figure {
   align-items: center;
   gap: 11px;
   color: #65777a;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   line-height: 1.5;
 }
@@ -157,14 +157,8 @@ figure {
 .affiliations {
   margin-top: 9px;
   color: #71817f;
-  font-size: 12px;
+  font-size: 13px;
   line-height: 1.55;
-}
-
-.corresponding-note {
-  margin-top: 2px;
-  color: #82918e;
-  font-size: 11px;
 }
 
 .resource-links {
@@ -1079,7 +1073,7 @@ figure {
   .byline {
     flex-wrap: wrap;
     justify-content: center;
-    font-size: 13px;
+    font-size: 14px;
   }
 
   .affiliations {
