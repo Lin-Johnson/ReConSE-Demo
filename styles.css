@@ -144,6 +144,27 @@ figure {
   color: #65777a;
   font-size: 14px;
   font-weight: 500;
+  line-height: 1.5;
+}
+
+.author-list sup,
+.affiliations sup {
+  font-size: 0.7em;
+  line-height: 0;
+  vertical-align: super;
+}
+
+.affiliations {
+  margin-top: 9px;
+  color: #71817f;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.corresponding-note {
+  margin-top: 2px;
+  color: #82918e;
+  font-size: 11px;
 }
 
 .byline-dot {
@@ -211,6 +232,8 @@ figure {
   color: #586a6c;
   font-size: 15px;
   line-height: 1.72;
+  text-align: justify;
+  text-justify: inter-word;
 }
 
 .abstract-copy strong {
@@ -989,6 +1012,10 @@ figure {
     flex-wrap: wrap;
     justify-content: center;
     font-size: 13px;
+  }
+
+  .affiliations {
+    font-size: 11px;
   }
 
   .overview-grid {
