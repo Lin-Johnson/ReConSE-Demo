@@ -211,6 +211,41 @@ figure {
   line-height: 1;
 }
 
+.resource-button-icon svg {
+  width: 13px;
+  height: 13px;
+  display: block;
+}
+
+.github-icon {
+  background: #e8edf0;
+  color: #24292f;
+}
+
+.github-icon svg path {
+  fill: currentColor;
+}
+
+.arxiv-icon {
+  background: #f8e7e7;
+  color: #a51c30;
+}
+
+.arxiv-icon svg path {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.4;
+}
+
+.arxiv-icon svg text {
+  fill: currentColor;
+  font-family: Georgia, serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
 .resource-button.is-disabled {
   border-color: #dce6e2;
   background: #f8faf9;
