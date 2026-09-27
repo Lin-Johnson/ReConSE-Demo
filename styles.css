@@ -218,6 +218,11 @@ figure {
 }
 
 .github-icon {
+  width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
+  border-radius: 50%;
+  border: 1px solid #cbd4d8;
   background: #e8edf0;
   color: #24292f;
 }
@@ -228,7 +233,10 @@ figure {
 
 .arxiv-icon {
   width: 17px;
+  height: 17px;
+  flex: 0 0 17px;
   border-radius: 50%;
+  border: 1px solid #e6c5c9;
   background: #f8e7e7;
   color: #a51c30;
 }
