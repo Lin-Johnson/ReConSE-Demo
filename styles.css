@@ -246,6 +246,10 @@ figure {
   height: 13px;
 }
 
+.arxiv-icon svg path {
+  fill: currentColor;
+}
+
 .resource-button.is-disabled {
   border-color: #dce6e2;
   background: #f8faf9;
